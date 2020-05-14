@@ -24,7 +24,7 @@ async def test(ctx):
 	await ctx.send(response)
 
 @bot.command(name='roll', help='Simulates rolling dice. `roll [dice] [sides]')
-async def roll(ctx, number_of_dice: int, number_of_sides: int):
+async def roll(ctx, number_of_dice: int=1, number_of_sides: int=6):
     dice = [
         str(random.choice(range(1, number_of_sides + 1)))
         for _ in range(number_of_dice)
