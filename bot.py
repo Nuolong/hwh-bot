@@ -12,12 +12,10 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-	for guild in client.guilds:
-		if guild.name == GUILD:
-			break
+	guild = discord.utils.find(lambda g: g.name == GUILD, client.guilds)	
 
 	print(f'{client.user} is connected to:\n'
-		f'{guild.name}(id: {guild.id})')
+		f'{guild.name}(id: {guild.id})\n')
 
 	members = '\n - '.join([member.name for member in guild.members])
 	print(f'Server Members:\n - {members}')
