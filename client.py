@@ -20,7 +20,7 @@ async def on_ready():
 		f'{guild.name}(id: {guild.id})\n')
 
 	members = '\n - '.join([member.name for member in guild.members])
-	print(f'Server Members:\n - {members}')
+	print(f'Server Members:\n - {members}\n--------------')
 
 @client.event
 async def on_member_join(member):
@@ -29,14 +29,22 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
-        return
+	if message.author == client.user:
+		return
 
-    test_responses = ['test a','test b','test c']
+	test_responses = ['test a','test b','test c']
 
-    if message.content == 'test!':
-        response = random.choice(test_responses)
-        await message.channel.send(response)
+	# messages containing these will be purged
+	bad_words = ["badword1","badword2","badword3"]	
+
+	for word in bad_words:
+		if message.content.count(word) > 0:
+			await message.channel.purge(limit=1)
+			print(f'{message.author} tried to use the blacklisted word: {word}\n')
+
+	if message.content == 'test!':
+		response = random.choice(test_responses)
+		await message.channel.send(response)
 
 
 @client.event
