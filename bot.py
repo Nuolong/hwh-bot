@@ -4,6 +4,7 @@ import os
 import random
 from dotenv import load_dotenv
 
+import discord
 from discord.ext import commands
 
 
@@ -31,6 +32,32 @@ async def roll(ctx, number_of_dice: int=1, number_of_sides: int=6):
     ]
     await ctx.send(', '.join(dice))
 
+@bot.command(name='mkch')
+@commands.has_role('TestRole')
+async def create_channel(ctx, channel_name='test-channel'):
+	guild = ctx.guild
+
+	#checks for if the channel doesn't already exist
+	if not discord.utils.get(guild.channels, name=channel_name):
+		print(f'Creating a new channel: {channel_name}')
+		await guild.create_text_channel(channel_name)
+		await ctx.send(f'Created channel: {channel_name}')
+	else:
+		await ctx.send('Cannot create channel. Channel already exists.')
+
+# broken for now
+@bot.command(name='rmch')
+@commands.has_role('TestRole')
+async def remove_channel(ctx, channel_name='test-channel'):
+    guildC = ctx.GuildChannel
+
+    #checks for if the channel already exists
+    if discord.utils.get(guildC, name=channel_name):
+        print(f'Removing the channel: {channel_name}')
+        await guildC.delete(channel_name)
+        await ctx.send(f'Removed channel: {channel_name}')
+    else:
+        await ctx.send('Cannot remove channel. Channel does not exist.')
 
 bot.run(TOKEN)
 
