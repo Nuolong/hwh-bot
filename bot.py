@@ -7,23 +7,25 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 
-
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
+# command prefix
 bot = commands.Bot(command_prefix='`')
 
+# calls this function when the bot connects successfully
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} connected to Discord.\n')
 
-
+# test command that picks a random string from test_pile to send
 @bot.command(name='test', help='Just a test command.')
 async def test(ctx):
 	test_pile = ['heblo','byeblo','test3']
 	response = random.choice(test_pile)
 	await ctx.send(response)
 
+# simulates a fair dice roll, can be given # of rolls and # of sides on the dice
 @bot.command(name='roll', help='Simulates rolling dice. `roll [dice] [sides]')
 async def roll(ctx, number_of_dice: int=1, number_of_sides: int=6):
     dice = [
@@ -32,6 +34,7 @@ async def roll(ctx, number_of_dice: int=1, number_of_sides: int=6):
     ]
     await ctx.send(', '.join(dice))
 
+# makes a channel
 @bot.command(name='mkch')
 @commands.has_role('TestRole')
 async def create_channel(ctx, channel_name='test-channel'):
@@ -45,7 +48,21 @@ async def create_channel(ctx, channel_name='test-channel'):
 	else:
 		await ctx.send('Cannot create channel. Channel already exists.')
 
+# broken for now. supposed to remove a channel
+@bot.command(name='rmch')
+@commands.has_role('TestRole')
+async def remove_channel(ctx, channel_name='test-channel'):
+	guildC = ctx.GuildChannel
 
+	#checks for if the channel already exists
+	if discord.utils.get(guildC, name=channel_name):
+		print(f'Removing the channel: {channel_name}')
+		await guildC.delete(channel_name)
+		await ctx.send(f'Removed channel: {channel_name}')
+	else:
+		await ctx.send('Cannot remove channel. Channel does not exist.')
+
+# assigns a role to any number of users
 @bot.command(name='assign', help="Assign an existing role to any number of users.")
 @commands.has_role('TestRole')
 async def assign_roles(ctx, role: discord.Role, *args: discord.Member):
@@ -65,6 +82,7 @@ async def assign_roles_error(ctx, error):
 	else:
 		print("Other error")
 
+# the opposite of the assign command
 @bot.command(name='revoke', help="Revoke an existing role from any number of users.")
 @commands.has_role('TestRole')
 async def revoke_roles(ctx, role: discord.Role, *args: discord.Member):
@@ -76,7 +94,8 @@ async def revoke_roles(ctx, role: discord.Role, *args: discord.Member):
 			await ctx.send(f'{member} does not have **{role}**')
 	print("Role revocation completed.")
 
-# can't figure out why `assign validRole validUser invalidUser would throw index out of range
+# can't figure out why `revoke validRole validUser invalidUser would throw index out of range
+# i.e. same problem from assign_roles_error
 @revoke_roles.error
 async def revoke_roles_error(ctx, error):
 	argument = list(ctx.command.clean_params)[len(ctx.args[1:])]
@@ -87,21 +106,6 @@ async def revoke_roles_error(ctx, error):
 	else:
 		print("Other error")
 
-
-
-# broken for now
-@bot.command(name='rmch')
-@commands.has_role('TestRole')
-async def remove_channel(ctx, channel_name='test-channel'):
-    guildC = ctx.GuildChannel
-
-    #checks for if the channel already exists
-    if discord.utils.get(guildC, name=channel_name):
-        print(f'Removing the channel: {channel_name}')
-        await guildC.delete(channel_name)
-        await ctx.send(f'Removed channel: {channel_name}')
-    else:
-        await ctx.send('Cannot remove channel. Channel does not exist.')
 
 bot.run(TOKEN)
 
