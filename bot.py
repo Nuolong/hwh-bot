@@ -5,6 +5,7 @@ import random
 from dotenv import load_dotenv
 
 import discord
+from discord import File
 from discord.ext import commands
 
 load_dotenv()
@@ -24,6 +25,21 @@ async def test(ctx):
 	test_pile = ['heblo','byeblo','test3']
 	response = random.choice(test_pile)
 	await ctx.send(response)
+
+# A command that can generate a text file containing the last n messages sent by user/ID x. To make things easier, let n be 100. 
+# The messages should be timestamped and in chronological order
+@bot.command(name='recent', help='Compiles a # of recent messages sent from a user into a text file')
+async def recent(ctx, member: discord.Member, n: int=100):
+	guild = ctx.guild
+	with open("msg.txt","a+") as f:
+		for channel in guild.text_channels:
+			messages = await channel.history(limit=100).flatten()
+			for message in messages:
+				if message.author == member:
+					f.write(f'[{message.channel}] {message.created_at} - {message.content}\n')
+		f.seek(0, 0) # set the position back to the front of the file to prepare for sending
+		await ctx.send(file=File(f, 'msg.txt'))	
+	
 
 # simulates a fair dice roll, can be given # of rolls and # of sides on the dice
 @bot.command(name='roll', help='Simulates rolling dice. `roll [dice] [sides]')
