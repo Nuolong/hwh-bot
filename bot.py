@@ -46,12 +46,25 @@ async def create_channel(ctx, channel_name='test-channel'):
 		await ctx.send('Cannot create channel. Channel already exists.')
 
 
-@bot.command(name='assign')
+@bot.command(name='assign', help="Assign an existing role to any number of users.")
 @commands.has_role('TestRole')
 async def assign_roles(ctx, role: discord.Role, *args: discord.Member):
 	for member in args:
-		await member.add_roles(role)
-	
+		await member.add_roles(role)		
+		await ctx.send(f'Added {role} to {member}.')
+	print("Role assignment completed.")
+
+# can't figure out why `assign validRole validUser invalidUser would throw index out of range
+@assign_roles.error
+async def assign_roles_error(ctx, error):
+	argument = list(ctx.command.clean_params)[len(ctx.args[1:])]
+	print(argument)
+	if argument == 'role':
+		await ctx.send('That role does not exist.')
+	elif argument == 'args':
+		await ctx.send('That member does not exist.')
+	else:
+		print("Other error")
 
 
 # broken for now
