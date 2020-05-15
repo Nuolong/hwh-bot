@@ -45,6 +45,15 @@ async def create_channel(ctx, channel_name='test-channel'):
 	else:
 		await ctx.send('Cannot create channel. Channel already exists.')
 
+
+@bot.command(name='assign')
+@commands.has_role('TestRole')
+async def assign_roles(ctx, role: discord.Role, *args: discord.Member):
+	for member in args:
+		await member.add_roles(role)
+	
+
+
 # broken for now
 @bot.command(name='rmch')
 @commands.has_role('TestRole')
