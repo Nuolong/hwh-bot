@@ -51,20 +51,42 @@ async def create_channel(ctx, channel_name='test-channel'):
 async def assign_roles(ctx, role: discord.Role, *args: discord.Member):
 	for member in args:
 		await member.add_roles(role)		
-		await ctx.send(f'Added {role} to {member}.')
+		await ctx.send(f'Added **{role}** to {member}.')
 	print("Role assignment completed.")
 
 # can't figure out why `assign validRole validUser invalidUser would throw index out of range
 @assign_roles.error
 async def assign_roles_error(ctx, error):
 	argument = list(ctx.command.clean_params)[len(ctx.args[1:])]
-	print(argument)
 	if argument == 'role':
 		await ctx.send('That role does not exist.')
 	elif argument == 'args':
 		await ctx.send('That member does not exist.')
 	else:
 		print("Other error")
+
+@bot.command(name='revoke', help="Revoke an existing role from any number of users.")
+@commands.has_role('TestRole')
+async def revoke_roles(ctx, role: discord.Role, *args: discord.Member):
+	for member in args:
+		if role in member.roles:
+			await member.remove_roles(role)
+			await ctx.send(f'Removed **{role}** from {member}.')
+		else:
+			await ctx.send(f'{member} does not have **{role}**')
+	print("Role revocation completed.")
+
+# can't figure out why `assign validRole validUser invalidUser would throw index out of range
+@revoke_roles.error
+async def revoke_roles_error(ctx, error):
+	argument = list(ctx.command.clean_params)[len(ctx.args[1:])]
+	if argument == 'role':
+		await ctx.send('That role does not exist.')
+	elif argument == 'args':
+		await ctx.send('That member does not exist.')
+	else:
+		print("Other error")
+
 
 
 # broken for now
