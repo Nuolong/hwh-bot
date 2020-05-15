@@ -31,14 +31,20 @@ async def test(ctx):
 @bot.command(name='recent', help='Compiles a # of recent messages sent from a user into a text file')
 async def recent(ctx, member: discord.Member, n: int=100):
 	guild = ctx.guild
-	with open("msg.txt","a+") as f:
-		for channel in guild.text_channels:
-			messages = await channel.history(limit=100).flatten()
-			for message in messages:
-				if message.author == member:
-					f.write(f'[{message.channel}] {message.created_at} - {message.content}\n')
+	messageDict = {}
+	for channel in guild.text_channels:
+		messages = await channel.history(limit=100).flatten()
+		for message in messages:
+			if message.author == member:
+				messageDict[message.id] = (message.channel,message.created_at,message.content)
+	
+	sortedMsg = sorted(messageDict, key=lambda x: messageDict[x][1], reverse = False)
+	
+	with open("{}.txt".format(member),"a+") as f:
+		for msg_id in sortedMsg[-n:]:
+			f.write(f'[{messageDict[msg_id][0]}] - {messageDict[msg_id][1]} - {messageDict[msg_id][2]}\n')
 		f.seek(0, 0) # set the position back to the front of the file to prepare for sending
-		await ctx.send(file=File(f, 'msg.txt'))	
+		await ctx.send(file=File(f, '{}.txt'.format(member)))	
 	
 
 # simulates a fair dice roll, can be given # of rolls and # of sides on the dice
