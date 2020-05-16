@@ -1,4 +1,15 @@
+import json
+import os
 import random
+
+from settings import *
+
+async def get_quote():
+	with open(os.path.join(DATA_DIR, "famous_quotes.json"), errors='ignore') as quote_file:
+		quotes = json.load(quote_file)
+	random_quote = random.choice(list(quotes))
+	fQuote = "\"" + random_quote["quoteText"] + "\" - " + random_quote["quoteAuthor"]
+	return fQuote
 
 
 # Credit to Zenrac for this TextToOWO method
