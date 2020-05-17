@@ -11,6 +11,16 @@ async def get_quote():
 	fQuote = "\"" + random_quote["quoteText"] + "\" - " + random_quote["quoteAuthor"]
 	return fQuote
 
+def text_with_baby(text):
+	listed = text.split()
+	listed.pop(0)
+	start = 0
+	end = len(listed)
+	while(start < end):
+		ind = random.randint(1, end) 
+		listed.insert(ind, "baby")
+		start += ind
+	return ' '.join(listed)
 
 # Credit to Zenrac for this TextToOWO method
 vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']

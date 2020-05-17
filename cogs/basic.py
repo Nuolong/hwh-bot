@@ -1,5 +1,5 @@
 from discord.ext import commands
-from utils import text_to_owo
+from utils import text_to_owo, text_with_baby
 
 class Basic(commands.Cog):
 	def __init__(self, bot):
@@ -10,6 +10,10 @@ class Basic(commands.Cog):
 	async def on_command_error(self, ctx, er):
 		print(er)
 		await ctx.send("Basic error message for incorrect command usage")
+
+	@commands.command()
+	async def baby(self, ctx):
+		await ctx.send(text_with_baby(ctx.message.content))
 
 	# converts text to owo when `owo is written
 	@commands.command()
